@@ -2,8 +2,6 @@ import argparse
 import json
 import matplotlib.pyplot as plt
 import numpy as np
-import xml.etree.ElementTree as ET
-import csv
 import os
 
 def load_data(filename):
@@ -19,30 +17,6 @@ def load_data(filename):
         else: 
             x = data['x']
             y = data['y']
-    elif ext == '.csv':
-        x, y = [], []
-        with open(filename) as f:
-            reader = csv.reader(f)
-            next(reader) 
-            for row in reader:
-                x.append(float(row[1]))
-                y.append(float(row[2]))
-    elif ext == '.txt':
-        x, y = [], []
-        with open(filename) as f:
-            for line in f:
-                parts = line.strip().split('    ')
-                x.append(float(parts[0]))
-                y.append(float(parts[1]))
-    elif ext == '.xml':
-        tree = ET.parse(filename)
-        root = tree.getroot()
-        if root.find('xdata') is not None:
-            x = [float(elem.text) for elem in root.find('xdata')]
-            y = [float(elem.text) for elem in root.find('ydata')]
-        else:
-            x = [float(row.find('x').text) for row in root.findall('row')]
-            y = [float(row.find('y').text) for row in root.findall('row')]
     else:
         raise ValueError(f"Unsupported file format: {ext}")
     
@@ -80,13 +54,6 @@ def plot_function(x, y, args):
 def main():
     parser = argparse.ArgumentParser(description='Plot function from data file')
     parser.add_argument('filename', help='Input data file')
-    
-
-    parser.add_argument('--title', help='Title of the plot')
-    parser.add_argument('--xlabel', help='Label for X axis')
-    parser.add_argument('--ylabel', help='Label for Y axis')
-    parser.add_argument('--legend', help='Legend text')
-    parser.add_argument('--grid', action='store_true', help='Enable grid')
     
 
     parser.add_argument('--ymin', type=float, help='Minimum Y value')
